@@ -5,27 +5,10 @@ namespace MathCalculator.Core.Models.Common
 {
     public abstract partial class Shape
     {
-        private PointF _location = new(250, 100);
         private Color _color = Color.RoyalBlue;
-        private Control _control;
+        private float _x = 250;
+        private float _y = 100;
 
-        public PointF Location
-        {
-            get
-            {
-                return _location;
-            }
-            set
-            {
-                if (value == Location)
-                {
-                    return;
-                }
-
-                _location = value;
-                Invalidate();
-            }
-        }
         public Color Color
         {
             get
@@ -34,42 +17,48 @@ namespace MathCalculator.Core.Models.Common
             }
             set
             {
-                if (value == Color)
+                if (value == Color || value == Color.Empty || value == Color.Transparent)
                 {
                     return;
                 }
 
                 _color = value;
-                Invalidate();
             }
         }
-        public Control Control
+
+        public float X
         {
             get
             {
-                return _control;
+                return _x;
             }
             set
             {
-                if (value == Control)
+                if (value == X || value < 0)
                 {
                     return;
                 }
 
-                _control = value;
-                Invalidate();
+                _x = value;
             }
         }
-
-        protected void Invalidate()
+        public float Y
         {
-            Control control = Control;
-
-            if (control is not null)
+            get
             {
-                Draw(control);
+                return _y;
+            }
+            set
+            {
+                if (value == Y || value < 0)
+                {
+                    return;
+                }
+
+                _y = value;
             }
         }
-        protected abstract void Draw(Control control);
+
+        public abstract void Draw(PaintEventArgs pe);
     }
 }
