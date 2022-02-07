@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathCalculator", "MathCalculator\MathCalculator.csproj", "{34BF87D2-41F3-48C0-9BF3-164F37EBE2B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathCalculator.Core", "MathCalculator.Core\MathCalculator.Core.csproj", "{92F209DC-F338-4EED-9F86-1155A193C154}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34BF87D2-41F3-48C0-9BF3-164F37EBE2B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34BF87D2-41F3-48C0-9BF3-164F37EBE2B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34BF87D2-41F3-48C0-9BF3-164F37EBE2B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34BF87D2-41F3-48C0-9BF3-164F37EBE2B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92F209DC-F338-4EED-9F86-1155A193C154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F209DC-F338-4EED-9F86-1155A193C154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F209DC-F338-4EED-9F86-1155A193C154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F209DC-F338-4EED-9F86-1155A193C154}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE24AD4B-2A46-4966-9CFD-0A345F3A6BDB}
+	EndGlobalSection
+EndGlobal
