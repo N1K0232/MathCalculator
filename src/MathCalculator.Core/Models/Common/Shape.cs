@@ -6,7 +6,8 @@ using System.Windows.Forms;
 namespace MathCalculator.Core.Models.Common
 {
     /// <summary>
-    /// 
+    /// represents the base class for the all the shapes
+    /// this class cannot be instantiated
     /// </summary>
     public abstract partial class Shape : IDisposable
     {
@@ -18,9 +19,10 @@ namespace MathCalculator.Core.Models.Common
         private Color _backColor = Color.Empty;
 
         /// <summary>
-        /// 
+        /// creates a new instance of the <see cref="Shape"/>
+        /// class
         /// </summary>
-        /// <param name="form"></param>
+        /// <param name="form">the form where the Shape will be drawed</param>
         protected Shape(Form form)
         {
             Form = form;
@@ -28,9 +30,11 @@ namespace MathCalculator.Core.Models.Common
         }
 
         /// <summary>
-        /// 
+        /// creates a new instance of the <see cref="Shape"/>
+        /// class
+        /// this constructor is called when the Shape is cloned
         /// </summary>
-        /// <param name="from"></param>
+        /// <param name="from">the <see cref="Shape"/> that will be cloned</param>
         internal Shape(Shape from)
         {
             X = from.X;
@@ -41,14 +45,31 @@ namespace MathCalculator.Core.Models.Common
             Shapes = from.Shapes;
         }
 
+        /// <summary>
+        /// performs some operations before the Garbage Collector
+        /// destroys the object
+        /// </summary>
         ~Shape()
         {
             Dispose(false);
             OnDestroy(EventArgs.Empty);
         }
 
+        /// <summary>
+        /// when overridden in a derived class,
+        /// it gets the perimeter of the shape
+        /// </summary>
         public abstract float Perimeter { get; }
+
+        /// <summary>
+        /// when overridden in a derived class,
+        /// it gets the area of the shape
+        /// </summary>
         public abstract float Area { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int X
         {
             get
@@ -62,6 +83,10 @@ namespace MathCalculator.Core.Models.Common
                 Update();
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int Y
         {
             get
@@ -75,6 +100,12 @@ namespace MathCalculator.Core.Models.Common
                 Update();
             }
         }
+
+        /// <summary>
+        /// the color of the background of the Shape
+        /// when will be draw in the form
+        /// default value is <see cref="Color.RoyalBlue"/>
+        /// </summary>
         public Color BackColor
         {
             get
@@ -107,6 +138,9 @@ namespace MathCalculator.Core.Models.Common
             }
         }
 
+        /// <summary>
+        /// gets or sets the Form where the control will be draw
+        /// </summary>
         internal Form Form
         {
             get
@@ -119,11 +153,26 @@ namespace MathCalculator.Core.Models.Common
             }
         }
 
+        /// <summary>
+        /// gets or sets the Location of the Shape in the form
+        /// </summary>
         protected Point Location { get; set; }
 
+        /// <summary>
+        /// this event is raised when the Shape is created
+        /// </summary>
         public event EventHandler Create;
+
+        /// <summary>
+        /// this event is raised when the Shape is destroyed
+        /// </summary>
         public event EventHandler Destroy;
 
+        /// <summary>
+        /// raises the <see cref="Create"/>
+        /// event
+        /// </summary>
+        /// <param name="e">the event informations</param>
         protected void OnCreate(EventArgs e)
         {
             Shape shape = this;
@@ -132,6 +181,12 @@ namespace MathCalculator.Core.Models.Common
             Shapes.Add(shape);
             Update();
         }
+
+        /// <summary>
+        /// raises the <see cref="Destroy"/>
+        /// event
+        /// </summary>
+        /// <param name="e">the event informations</param>
         protected void OnDestroy(EventArgs e)
         {
             Shape shape = this;
@@ -139,6 +194,11 @@ namespace MathCalculator.Core.Models.Common
             handler?.Invoke(shape, e);
             Shapes.Remove(shape);
         }
+
+        /// <summary>
+        /// when a property of the Shape changes its value
+        /// this method redraws the control
+        /// </summary>
         protected void Update()
         {
             if (Form is null)
@@ -149,19 +209,39 @@ namespace MathCalculator.Core.Models.Common
             Form form = Form;
             form.Paint += new PaintEventHandler(DrawShape);
         }
+
+        /// <summary>
+        /// Raises the <see cref="Control.Paint"/>
+        /// event
+        /// </summary>
+        /// <param name="sender">the object that called the event</param>
+        /// <param name="pe">the event informations</param>
         private void DrawShape(object sender, PaintEventArgs pe)
         {
             Graphics graphics = pe.Graphics;
             graphics.SmoothingMode = SmoothingMode.AntiAlias;
             Draw(graphics);
         }
+
+        /// <summary>
+        /// when overridden in a derived class, this method draws the shape
+        /// </summary>
+        /// <param name="graphics">the graphics of the form</param>
         protected abstract void Draw(Graphics graphics);
 
+        /// <summary>
+        /// releases all the resources
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// releases all the resources
+        /// </summary>
+        /// <param name="disposing"></param>
         private void Dispose(bool disposing)
         {
             if (disposing && _form != null)
@@ -170,6 +250,10 @@ namespace MathCalculator.Core.Models.Common
             }
         }
 
+        /// <summary>
+        /// when the X or the Y point changes this method sets the new location
+        /// for the shape
+        /// </summary>
         private void SetNewLocation()
         {
             int x = X;
@@ -177,22 +261,50 @@ namespace MathCalculator.Core.Models.Common
             Location = new Point(x, y);
         }
 
+        /// <summary>
+        /// clones the shape
+        /// </summary>
+        /// <returns></returns>
         public Shape Clone()
         {
             return CopyFrom(this);
         }
+
+        /// <summary>
+        /// when overridden in a derived class 
+        /// this method creates a copy of the current object
+        /// </summary>
+        /// <param name="from"></param>
+        /// <returns></returns>
         protected abstract Shape CopyFrom(Shape from);
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator ==(Shape left, Shape right)
         {
             return left.CheckEquals(right);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator !=(Shape left, Shape right)
         {
             return !(left == right);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="right"></param>
+        /// <returns></returns>
         internal virtual bool CheckEquals(Shape right)
         {
             Shape left = this;
