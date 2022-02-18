@@ -1,16 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace MathCalculator.Core.Models.Common
 {
     public abstract partial class Shape
     {
-        public static ShapeCollection Shapes { get; }
+        public ShapeCollection Shapes { get; }
 
-        public sealed class ShapeCollection
+        public sealed class ShapeCollection : IList<Shape>, ICollection<Shape>, ICollection
         {
             private readonly List<Shape> _shapes;
 
-            internal ShapeCollection()
+            public ShapeCollection()
             {
                 _shapes = new List<Shape>();
             }
@@ -19,12 +21,13 @@ namespace MathCalculator.Core.Models.Common
             {
                 get
                 {
-                    return _shapes[index];
+                    Shape item = _shapes[index];
+                    return item;
                 }
                 set
                 {
-                    Shape old = _shapes[index];
-                    if (value == old)
+                    Shape oldValue = this[index];
+                    if (value == oldValue)
                     {
                         return;
                     }
@@ -33,32 +36,85 @@ namespace MathCalculator.Core.Models.Common
                 }
             }
 
-            public void Add(Shape shape)
-            {
-                _shapes.Add(shape);
-            }
+            public int Count => _shapes.Count;
 
-            public bool Remove(int index)
+            public bool IsReadOnly => false;
+
+            public bool IsSynchronized => false;
+
+            public object SyncRoot => this;
+
+            public void Add(Shape item)
             {
-                Shape shape = this[index];
-                if (shape is null)
+                bool contains = Contains(item);
+                if (contains)
+                {
+                    return;
+                }
+
+                _shapes.Add(item);
+            }
+            public void Clear()
+            {
+                _shapes.Clear();
+            }
+            public bool Contains(Shape item)
+            {
+                return _shapes.Contains(item);
+            }
+            public void CopyTo(Shape[] array, int arrayIndex)
+            {
+                ICollection collection = this;
+                collection.CopyTo(array, arrayIndex);
+            }
+            public IEnumerator<Shape> GetEnumerator()
+            {
+                IEnumerable<Shape> shapes = this;
+                return shapes.GetEnumerator();
+            }
+            public int IndexOf(Shape item)
+            {
+                if (item is null)
+                {
+                    return -1; //the shape wasn't found
+                }
+
+                return _shapes.IndexOf(item);
+            }
+            public void Insert(int index, Shape item)
+            {
+                Shape oldValue = this[index];
+                if (item == oldValue)
+                {
+                    return;
+                }
+
+                _shapes[index] = item;
+            }
+            public bool Remove(Shape item)
+            {
+                if (item is null)
                 {
                     return false;
                 }
 
-                return _shapes.Remove(shape);
+                return _shapes.Remove(item);
+            }
+            public void RemoveAt(int index)
+            {
+                Shape item = this[index];
+                Remove(item);
             }
 
-            public int IndexOf(Shape shape)
+            void ICollection.CopyTo(Array array, int index)
             {
-                if (shape is null)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return _shapes.IndexOf(shape);
-                }
+                Shape[] items = array as Shape[];
+                _shapes.CopyTo(items, index);
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return _shapes.GetEnumerator();
             }
         }
     }
