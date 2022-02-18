@@ -44,6 +44,7 @@ namespace MathCalculator.Core.Models.Common
         ~Shape()
         {
             Dispose(false);
+            OnDestroy(EventArgs.Empty);
         }
 
         public abstract float Perimeter { get; }
@@ -167,7 +168,6 @@ namespace MathCalculator.Core.Models.Common
             {
                 _form.Dispose();
             }
-            OnDestroy(EventArgs.Empty);
         }
 
         private void SetNewLocation()
