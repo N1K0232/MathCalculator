@@ -66,5 +66,13 @@ namespace MathCalculator.Core.Models
             float radius = circle.Radius * 10;
             graphics.FillEllipse(brush, x, y, radius, radius);
         }
+
+        internal override bool CheckEquals(Shape other)
+        {
+            Circle left = this;
+            Circle right = other as Circle;
+            return left.Radius == right.Radius
+                && base.CheckEquals(right);
+        }
     }
 }

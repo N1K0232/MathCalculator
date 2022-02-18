@@ -17,10 +17,6 @@ namespace MathCalculator.Core.Models.Common
         private int _y = 0;
         private Color _backColor = Color.Empty;
 
-        static Shape()
-        {
-            Shapes = new ShapeCollection();
-        }
         /// <summary>
         /// 
         /// </summary>
@@ -37,6 +33,7 @@ namespace MathCalculator.Core.Models.Common
             BackColor = from.BackColor;
             Form = from.Form;
             Location = from.Location;
+            Shapes = from.Shapes;
         }
 
         ~Shape()
@@ -181,5 +178,28 @@ namespace MathCalculator.Core.Models.Common
             return CopyFrom(this);
         }
         protected abstract Shape CopyFrom(Shape from);
+
+
+        public static bool operator ==(Shape left, Shape right)
+        {
+            return left.CheckEquals(right);
+        }
+        public static bool operator !=(Shape left, Shape right)
+        {
+            return !(left == right);
+        }
+
+        internal virtual bool CheckEquals(Shape right)
+        {
+            Shape left = this;
+            return left.X == right.X
+                && left.Y == right.Y
+                && left.Form == right.Form
+                && left.Location == right.Location
+                && left.Perimeter == right.Perimeter
+                && left.Area == right.Area
+                && left.Shapes == right.Shapes
+                && left.BackColor == right.BackColor;
+        }
     }
 }

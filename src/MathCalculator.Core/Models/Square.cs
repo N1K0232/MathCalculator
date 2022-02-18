@@ -72,5 +72,14 @@ namespace MathCalculator.Core.Models
             graphics.FillRectangle(brush, x, y, side, side);
             brush.Dispose();
         }
+
+        internal override bool CheckEquals(Shape other)
+        {
+            Square left = this;
+            Square right = other as Square;
+            return left.Side == right.Side
+                && left.Diagonal == right.Diagonal
+                && base.CheckEquals(right);
+        }
     }
 }

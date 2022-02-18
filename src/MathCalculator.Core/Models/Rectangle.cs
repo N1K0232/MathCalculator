@@ -90,5 +90,16 @@ namespace MathCalculator.Core.Models
             graphics.FillRectangle(brush, x, y, width, height);
             brush.Dispose();
         }
+
+        internal override bool CheckEquals(Shape other)
+        {
+            Rectangle left = this;
+            Rectangle right = other as Rectangle;
+
+            return left.Diagonal == right.Diagonal
+                && left.Width == right.Width
+                && left.Height == right.Height
+                && base.CheckEquals(right);
+        }
     }
 }
