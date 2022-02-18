@@ -26,6 +26,11 @@ namespace MathCalculator.Core.Models.Common
             Form = form;
             OnCreate(EventArgs.Empty);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="from"></param>
         internal Shape(Shape from)
         {
             X = from.X;
@@ -131,8 +136,7 @@ namespace MathCalculator.Core.Models.Common
             Shape shape = this;
             EventHandler handler = Destroy;
             handler?.Invoke(shape, e);
-            int index = Shapes.IndexOf(shape);
-            Shapes.Remove(index);
+            Shapes.Remove(shape);
         }
         protected void Update()
         {
