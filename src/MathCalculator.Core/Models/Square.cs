@@ -1,18 +1,20 @@
 ﻿using MathCalculator.Core.Models.Common;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace MathCalculator.Core.Models
 {
-    public partial class Square : Shape
+    public class Square : Shape
     {
-        private float _side;
-        private float _area;
-        private float _perimeter;
+        private float _side = 0;
 
-        public Square()
+        public Square(Form form) : base(form)
         {
-            _side = 0;
-            _area = 0;
-            _perimeter = 0;
+        }
+        private Square(Square from) : base(from)
+        {
+            Side = from.Side;
         }
 
         public float Side
@@ -23,36 +25,52 @@ namespace MathCalculator.Core.Models
             }
             set
             {
-                if (value == Side)
-                {
-                    return;
-                }
-
                 _side = value;
                 Update();
             }
         }
-
-        public override float Area
-        {
-            get
-            {
-                return _area;
-            }
-        }
-
         public override float Perimeter
         {
             get
             {
-                return _perimeter;
+                float side = Side;
+                return side * 4;
+            }
+        }
+        public override float Area
+        {
+            get
+            {
+                float side = Side;
+                return side * side;
+            }
+        }
+        public float Diagonal
+        {
+            get
+            {
+                double side = Convert.ToDouble(Side);
+                double result = 2 * Math.Sqrt(side);
+                return Convert.ToSingle(result);
             }
         }
 
-        protected override void Calculate()
+        protected override Shape CopyFrom(Shape from)
         {
-            _area = _side * _side;
-            _perimeter = _side * 4;
+            Square square = from as Square;
+            return new Square(square);
+        }
+        protected override void Draw(Graphics graphics)
+        {
+            Square square = this;
+            Color backColor = BackColor;
+            SolidBrush brush = new(backColor);
+            int x = square.X;
+            int y = square.Y;
+            float side = square.Side * 10;
+
+            graphics.FillRectangle(brush, x, y, side, side);
+            brush.Dispose();
         }
     }
 }

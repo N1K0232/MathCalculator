@@ -1,50 +1,185 @@
-﻿namespace MathCalculator.Core.Models.Common
-{
-    public abstract partial class Shape
-    {
-        private string _name;
-        private Shape _parent;
+﻿using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
-        protected Shape()
+namespace MathCalculator.Core.Models.Common
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public abstract partial class Shape : IDisposable
+    {
+        private static readonly Color s_backColor = Color.RoyalBlue;
+
+        private Form _form;
+        private int _x = 0;
+        private int _y = 0;
+        private Color _backColor = Color.Empty;
+
+        static Shape()
         {
-            _name = "";
-            _parent = null;
+            Shapes = new ShapeCollection();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="form"></param>
+        protected Shape(Form form)
+        {
+            Form = form;
+            OnCreate(EventArgs.Empty);
+        }
+        internal Shape(Shape from)
+        {
+            X = from.X;
+            Y = from.Y;
+            BackColor = from.BackColor;
+            Form = from.Form;
+            Location = from.Location;
         }
 
-        public string Name
+        ~Shape()
+        {
+            Dispose(false);
+        }
+
+        public abstract float Perimeter { get; }
+        public abstract float Area { get; }
+        public int X
         {
             get
             {
-                return _name;
+                return _x;
             }
             set
             {
-                if (value == Name)
+                _x = value;
+                SetNewLocation();
+                Update();
+            }
+        }
+        public int Y
+        {
+            get
+            {
+                return _y;
+            }
+            set
+            {
+                _y = value;
+                SetNewLocation();
+                Update();
+            }
+        }
+        public Color BackColor
+        {
+            get
+            {
+                Color c = _backColor;
+
+                if (c.IsEmpty)
+                {
+                    c = s_backColor;
+                }
+
+                return c;
+            }
+            set
+            {
+                Color c = value;
+
+                if (c == BackColor)
                 {
                     return;
                 }
 
-                _name = value;
+                if (c.IsEmpty)
+                {
+                    c = s_backColor;
+                }
+
+                _backColor = c;
+                Update();
             }
         }
-        public Shape Parent
+
+        internal Form Form
         {
             get
             {
-                return _parent;
+                return _form;
             }
             set
             {
-                _parent = value;
+                _form = value;
             }
         }
-        public abstract float Area { get; }
-        public abstract float Perimeter { get; }
 
+        protected Point Location { get; set; }
+
+        public event EventHandler Create;
+        public event EventHandler Destroy;
+
+        protected void OnCreate(EventArgs e)
+        {
+            Shape shape = this;
+            EventHandler handler = Create;
+            handler?.Invoke(shape, e);
+            Shapes.Add(shape);
+            Update();
+        }
+        protected void OnDestroy(EventArgs e)
+        {
+            Shape shape = this;
+            EventHandler handler = Destroy;
+            handler?.Invoke(shape, e);
+            int index = Shapes.IndexOf(shape);
+            Shapes.Remove(index);
+        }
         protected void Update()
         {
-            Calculate();
+            if (Form is null)
+            {
+                return;
+            }
+
+            Form form = Form;
+            form.Paint += new PaintEventHandler(DrawShape);
         }
-        protected abstract void Calculate();
+        private void DrawShape(object sender, PaintEventArgs pe)
+        {
+            Graphics graphics = pe.Graphics;
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            Draw(graphics);
+        }
+        protected abstract void Draw(Graphics graphics);
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        private void Dispose(bool disposing)
+        {
+            if (disposing && _form != null)
+            {
+                _form.Dispose();
+            }
+            OnDestroy(EventArgs.Empty);
+        }
+
+        private void SetNewLocation()
+        {
+            int x = X;
+            int y = Y;
+            Location = new Point(x, y);
+        }
+
+        public Shape Clone()
+        {
+            return CopyFrom(this);
+        }
+        protected abstract Shape CopyFrom(Shape from);
     }
 }
