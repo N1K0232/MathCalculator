@@ -238,6 +238,11 @@ namespace MathCalculator.Core.Models.Common
             GC.SuppressFinalize(this);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         /// <summary>
         /// releases all the resources
         /// </summary>
@@ -270,6 +275,11 @@ namespace MathCalculator.Core.Models.Common
             return CopyFrom(this);
         }
 
+        public override bool Equals(object obj)
+        {
+            return CheckEquals(obj as Shape);
+        }
+
         /// <summary>
         /// when overridden in a derived class 
         /// this method creates a copy of the current object
@@ -279,7 +289,7 @@ namespace MathCalculator.Core.Models.Common
         protected abstract Shape CopyFrom(Shape from);
 
         /// <summary>
-        /// 
+        /// check if the two shapes are equals
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
@@ -290,10 +300,10 @@ namespace MathCalculator.Core.Models.Common
         }
 
         /// <summary>
-        /// 
+        /// returns the opposite result of the == operator
         /// </summary>
         /// <param name="left"></param>
-        /// <param name="right"></param>
+        /// <param name="right"></param>    
         /// <returns></returns>
         public static bool operator !=(Shape left, Shape right)
         {
@@ -301,21 +311,21 @@ namespace MathCalculator.Core.Models.Common
         }
 
         /// <summary>
-        /// 
+        /// Checks if the right shape is equals to the left shape
         /// </summary>
-        /// <param name="right"></param>
+        /// <param name="right">the right shape</param>
         /// <returns></returns>
         internal virtual bool CheckEquals(Shape right)
         {
-            Shape left = this;
-            return left.X == right.X
-                && left.Y == right.Y
-                && left.Form == right.Form
-                && left.Location == right.Location
-                && left.Perimeter == right.Perimeter
-                && left.Area == right.Area
-                && left.Shapes == right.Shapes
-                && left.BackColor == right.BackColor;
+            return right != null
+                && X == right.X
+                && Y == right.Y
+                && Form == right.Form
+                && Location == right.Location
+                && Perimeter == right.Perimeter
+                && Area == right.Area
+                && Shapes == right.Shapes
+                && BackColor == right.BackColor;
         }
     }
 }
