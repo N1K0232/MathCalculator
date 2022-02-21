@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -11,6 +12,11 @@ namespace MathCalculator.Core.Models.Common
     /// </summary>
     public abstract partial class Shape : IDisposable
     {
+        private readonly EventHandlerList Events = new();
+
+        private static readonly object s_createEvent = new();
+        private static readonly object s_destroyEvent = new();
+
         private static readonly Color s_backColor = Color.RoyalBlue;
 
         private Form _form;
@@ -26,6 +32,7 @@ namespace MathCalculator.Core.Models.Common
         protected Shape(Form form)
         {
             Form = form;
+            Shapes = new();
             OnCreate(EventArgs.Empty);
         }
 
@@ -165,12 +172,17 @@ namespace MathCalculator.Core.Models.Common
         /// <summary>
         /// this event is raised when the Shape is created
         /// </summary>
-        public event EventHandler Create;
-
-        /// <summary>
-        /// this event is raised when the Shape is destroyed
-        /// </summary>
-        public event EventHandler Destroy;
+        public event EventHandler Create
+        {
+            add
+            {
+                Events.AddHandler(s_createEvent, value);
+            }
+            remove
+            {
+                Events.RemoveHandler(s_destroyEvent, value);
+            }
+        }
 
         /// <summary>
         /// raises the <see cref="Create"/>
@@ -180,8 +192,7 @@ namespace MathCalculator.Core.Models.Common
         protected void OnCreate(EventArgs e)
         {
             Shape shape = this;
-            EventHandler handler = Create;
-            handler?.Invoke(shape, e);
+            ((EventHandler)Events[s_createEvent])?.Invoke(shape, e);
             Shapes.Add(shape);
             Update();
         }
@@ -194,8 +205,7 @@ namespace MathCalculator.Core.Models.Common
         protected void OnDestroy(EventArgs e)
         {
             Shape shape = this;
-            EventHandler handler = Destroy;
-            handler?.Invoke(shape, e);
+            ((EventHandler)Events[s_destroyEvent])?.Invoke(shape, e);
             if (Shapes.Remove(shape) && !IsDestroyed)
             {
                 IsDestroyed = true;
