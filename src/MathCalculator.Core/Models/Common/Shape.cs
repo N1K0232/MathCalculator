@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace MathCalculator.Core.Models.Common
@@ -16,13 +14,6 @@ namespace MathCalculator.Core.Models.Common
 
         private static readonly object s_createEvent = new();
         private static readonly object s_destroyEvent = new();
-
-        private static readonly Color s_backColor = Color.RoyalBlue;
-
-        private Form _form;
-        private int _x = 0;
-        private int _y = 0;
-        private Color _backColor = Color.Empty;
 
         /// <summary>
         /// creates a new instance of the <see cref="Shape"/>
@@ -47,6 +38,7 @@ namespace MathCalculator.Core.Models.Common
             X = from.X;
             Y = from.Y;
             BackColor = from.BackColor;
+            BorderColor = from.BorderColor;
             Form = from.Form;
             Location = from.Location;
             Shapes = from.Shapes;
@@ -76,98 +68,7 @@ namespace MathCalculator.Core.Models.Common
         /// <summary>
         /// 
         /// </summary>
-        public int X
-        {
-            get
-            {
-                return _x;
-            }
-            set
-            {
-                _x = value;
-                SetNewLocation();
-                Update();
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Y
-        {
-            get
-            {
-                return _y;
-            }
-            set
-            {
-                _y = value;
-                SetNewLocation();
-                Update();
-            }
-        }
-
-        /// <summary>
-        /// the color of the background of the Shape
-        /// when will be draw in the form
-        /// default value is <see cref="Color.RoyalBlue"/>
-        /// </summary>
-        public Color BackColor
-        {
-            get
-            {
-                Color c = _backColor;
-
-                if (c.IsEmpty)
-                {
-                    c = s_backColor;
-                }
-
-                return c;
-            }
-            set
-            {
-                Color c = value;
-
-                if (c == BackColor)
-                {
-                    return;
-                }
-
-                if (c.IsEmpty)
-                {
-                    c = s_backColor;
-                }
-
-                _backColor = c;
-                Update();
-            }
-        }
-
-        /// <summary>
-        /// gets or sets the Form where the control will be draw
-        /// </summary>
-        internal Form Form
-        {
-            get
-            {
-                return _form;
-            }
-            set
-            {
-                _form = value;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         internal bool IsDestroyed { get; set; } = false;
-
-        /// <summary>
-        /// gets or sets the Location of the Shape in the form
-        /// </summary>
-        protected Point Location { get; set; }
 
         /// <summary>
         /// this event is raised when the Shape is created
@@ -227,25 +128,6 @@ namespace MathCalculator.Core.Models.Common
             form.Paint += new PaintEventHandler(DrawShape);
         }
 
-        /// <summary>
-        /// Raises the <see cref="Control.Paint"/>
-        /// event
-        /// </summary>
-        /// <param name="sender">the object that called the event</param>
-        /// <param name="pe">the event informations</param>
-        private void DrawShape(object sender, PaintEventArgs pe)
-        {
-            Graphics graphics = pe.Graphics;
-            graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            Draw(graphics);
-        }
-
-        /// <summary>
-        /// when overridden in a derived class, this method draws the shape
-        /// </summary>
-        /// <param name="graphics">the graphics of the form</param>
-        protected abstract void Draw(Graphics graphics);
-
         public override int GetHashCode()
         {
             return base.GetHashCode();
@@ -271,17 +153,6 @@ namespace MathCalculator.Core.Models.Common
                 _form.Dispose();
             }
             OnDestroy(EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// when the X or the Y point changes this method sets the new location
-        /// for the shape
-        /// </summary>
-        private void SetNewLocation()
-        {
-            int x = X;
-            int y = Y;
-            Location = new Point(x, y);
         }
 
         /// <summary>
@@ -343,7 +214,8 @@ namespace MathCalculator.Core.Models.Common
                 && Perimeter == right.Perimeter
                 && Area == right.Area
                 && Shapes == right.Shapes
-                && BackColor == right.BackColor;
+                && BackColor == right.BackColor
+                && BorderColor == right.BorderColor;
         }
     }
 }
