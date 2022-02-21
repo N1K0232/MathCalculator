@@ -52,7 +52,6 @@ namespace MathCalculator.Core.Models.Common
         ~Shape()
         {
             Dispose(false);
-            OnDestroy(EventArgs.Empty);
         }
 
         /// <summary>
@@ -154,6 +153,11 @@ namespace MathCalculator.Core.Models.Common
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        internal bool IsDestroyed { get; set; } = false;
+
+        /// <summary>
         /// gets or sets the Location of the Shape in the form
         /// </summary>
         protected Point Location { get; set; }
@@ -192,7 +196,10 @@ namespace MathCalculator.Core.Models.Common
             Shape shape = this;
             EventHandler handler = Destroy;
             handler?.Invoke(shape, e);
-            Shapes.Remove(shape);
+            if (Shapes.Remove(shape) && !IsDestroyed)
+            {
+                IsDestroyed = true;
+            }
         }
 
         /// <summary>
@@ -229,6 +236,11 @@ namespace MathCalculator.Core.Models.Common
         /// <param name="graphics">the graphics of the form</param>
         protected abstract void Draw(Graphics graphics);
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         /// <summary>
         /// releases all the resources
         /// </summary>
@@ -236,11 +248,6 @@ namespace MathCalculator.Core.Models.Common
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
 
         /// <summary>
@@ -253,6 +260,7 @@ namespace MathCalculator.Core.Models.Common
             {
                 _form.Dispose();
             }
+            OnDestroy(EventArgs.Empty);
         }
 
         /// <summary>
