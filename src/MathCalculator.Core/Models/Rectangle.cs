@@ -80,15 +80,19 @@ namespace MathCalculator.Core.Models
         protected override void Draw(Graphics graphics)
         {
             Rectangle rectangle = this;
-            Color backColor = BackColor;
-            SolidBrush brush = new(backColor);
+            Color borderColor = rectangle.BorderColor;
+            Color backColor = rectangle.BackColor;
+            Pen border = new(borderColor);
+            SolidBrush background = new(backColor);
             int x = rectangle.X;
             int y = rectangle.Y;
             float width = rectangle.Width * 10;
             float height = rectangle.Height * 10;
 
-            graphics.FillRectangle(brush, x, y, width, height);
-            brush.Dispose();
+            graphics.DrawRectangle(border, x, y, width, height);
+            graphics.FillRectangle(background, x, y, width, height);
+            background.Dispose();
+            border.Dispose();
         }
 
         internal override bool CheckEquals(Shape other)

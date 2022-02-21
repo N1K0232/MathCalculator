@@ -59,12 +59,18 @@ namespace MathCalculator.Core.Models
         protected override void Draw(Graphics graphics)
         {
             Circle circle = this;
-            Color backColor = BackColor;
-            SolidBrush brush = new(backColor);
+            Color borderColor = circle.BorderColor;
+            Color backColor = circle.BackColor;
+            Pen border = new(borderColor);
+            SolidBrush background = new(backColor);
             int x = circle.X;
             int y = circle.Y;
             float radius = circle.Radius * 10;
-            graphics.FillEllipse(brush, x, y, radius, radius);
+
+            graphics.DrawEllipse(border, x, y, radius, radius);
+            graphics.FillEllipse(background, x, y, radius, radius);
+            background.Dispose();
+            border.Dispose();
         }
 
         internal override bool CheckEquals(Shape other)
