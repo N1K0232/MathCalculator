@@ -146,7 +146,8 @@ namespace MathCalculator.Core.Models.Common
         protected void OnDestroy(EventArgs e)
         {
             Shape shape = this;
-            ((EventHandler)Events[s_destroyEvent])?.Invoke(shape, e);
+            EventHandler handler = (EventHandler)Events[s_destroyEvent];
+            handler?.Invoke(shape, e);
             if (Shapes.Remove(shape) && !IsDestroyed)
             {
                 IsDestroyed = true;
