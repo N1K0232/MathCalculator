@@ -8,7 +8,7 @@ namespace MathCalculator.Core.Models.Common
     /// represents the base class for the all the shapes
     /// this class cannot be instantiated
     /// </summary>
-    public abstract partial class Shape : IDisposable
+    public abstract partial class Shape : IDisposable, ICloneable
     {
         private readonly EventHandlerList Events = new();
 
@@ -161,8 +161,16 @@ namespace MathCalculator.Core.Models.Common
         /// <returns></returns>
         public Shape Clone()
         {
-            return CopyFrom(this);
+            ICloneable cloneable = this;
+            object clone = cloneable.Clone();
+            return clone as Shape;
         }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        object ICloneable.Clone() => CopyFrom(this);
 
         public override bool Equals(object obj)
         {
@@ -204,18 +212,18 @@ namespace MathCalculator.Core.Models.Common
         /// </summary>
         /// <param name="right">the right shape</param>
         /// <returns></returns>
-        internal virtual bool CheckEquals(Shape right)
+        internal virtual bool CheckEquals(Shape other)
         {
-            return right != null
-                && X == right.X
-                && Y == right.Y
-                && Form == right.Form
-                && Location == right.Location
-                && Perimeter == right.Perimeter
-                && Area == right.Area
-                && Shapes == right.Shapes
-                && BackColor == right.BackColor
-                && BorderColor == right.BorderColor;
+            return other != null
+                && X == other.X
+                && Y == other.Y
+                && Form == other.Form
+                && Location == other.Location
+                && Perimeter == other.Perimeter
+                && Area == other.Area
+                && Shapes == other.Shapes
+                && BackColor == other.BackColor
+                && BorderColor == other.BorderColor;
         }
     }
 }

@@ -27,6 +27,11 @@ namespace MathCalculator.Core.Models
             }
             set
             {
+                if (value == Radius || value <= 0)
+                {
+                    return;
+                }
+
                 _radius = value;
                 Update();
             }
@@ -59,25 +64,30 @@ namespace MathCalculator.Core.Models
         protected override void Draw(Graphics graphics)
         {
             Circle circle = this;
+
+            if (circle.Radius == 0)
+            {
+                return;
+            }
+
             Color borderColor = circle.BorderColor;
             Color backColor = circle.BackColor;
-            Pen border = new(borderColor);
-            SolidBrush background = new(backColor);
+            Pen pen = new(borderColor);
+            SolidBrush brush = new(backColor);
             int x = circle.X;
             int y = circle.Y;
             float radius = circle.Radius * 10;
 
-            graphics.DrawEllipse(border, x, y, radius, radius);
-            graphics.FillEllipse(background, x, y, radius, radius);
-            background.Dispose();
-            border.Dispose();
+            graphics.DrawEllipse(pen, x, y, radius, radius);
+            graphics.FillEllipse(brush, x, y, radius, radius);
+            brush.Dispose();
+            pen.Dispose();
         }
 
         internal override bool CheckEquals(Shape other)
         {
-            Circle left = this;
             Circle right = other as Circle;
-            return left.Radius == right.Radius
+            return Radius == right.Radius
                 && base.CheckEquals(right);
         }
     }

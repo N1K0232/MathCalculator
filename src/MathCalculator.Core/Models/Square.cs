@@ -25,6 +25,11 @@ namespace MathCalculator.Core.Models
             }
             set
             {
+                if (value == Side || value <= 0)
+                {
+                    return;
+                }
+
                 _side = value;
                 Update();
             }
@@ -63,26 +68,31 @@ namespace MathCalculator.Core.Models
         protected override void Draw(Graphics graphics)
         {
             Square square = this;
+
+            if (square.Side == 0)
+            {
+                return;
+            }
+
             Color borderColor = square.BorderColor;
             Color backColor = square.BackColor;
-            Pen border = new(borderColor);
-            SolidBrush background = new(backColor);
+            Pen pen = new(borderColor, 2);
+            SolidBrush brush = new(backColor);
             int x = square.X;
             int y = square.Y;
             float side = square.Side * 10;
 
-            graphics.DrawRectangle(border, x, y, side, side);
-            graphics.FillRectangle(background, x, y, side, side);
-            background.Dispose();
-            border.Dispose();
+            graphics.DrawRectangle(pen, x, y, side, side);
+            graphics.FillRectangle(brush, x, y, side, side);
+            pen.Dispose();
+            brush.Dispose();
         }
 
         internal override bool CheckEquals(Shape other)
         {
-            Square left = this;
             Square right = other as Square;
-            return left.Side == right.Side
-                && left.Diagonal == right.Diagonal
+            return Side == right.Side
+                && Diagonal == right.Diagonal
                 && base.CheckEquals(right);
         }
     }
