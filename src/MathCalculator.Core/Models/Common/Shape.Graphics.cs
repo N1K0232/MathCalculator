@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace MathCalculator.Core.Models.Common
 {
-    public partial class Shape
+    public abstract partial class Shape
     {
         private static readonly Color s_backColor = Color.RoyalBlue;
         private static readonly Color s_borderColor = Color.Yellow;
@@ -72,14 +72,14 @@ namespace MathCalculator.Core.Models.Common
             {
                 Color c = value;
 
-                if (c == BackColor)
-                {
-                    return;
-                }
-
                 if (c.IsEmpty)
                 {
                     c = s_backColor;
+                }
+
+                if (c == BackColor)
+                {
+                    return;
                 }
 
                 _backColor = c;
@@ -109,14 +109,14 @@ namespace MathCalculator.Core.Models.Common
             {
                 Color c = value;
 
+                if (c.IsEmpty)
+                {
+                    c = s_backColor;
+                }
+
                 if (c == BorderColor)
                 {
                     return;
-                }
-
-                if (c.IsEmpty)
-                {
-                    c = s_borderColor;
                 }
 
                 _borderColor = c;

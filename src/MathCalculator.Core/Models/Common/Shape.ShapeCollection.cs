@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MathCalculator.Core.Models.Common
 {
-    public partial class Shape
+    public abstract partial class Shape
     {
         /// <summary>
         /// gets the list of shapes

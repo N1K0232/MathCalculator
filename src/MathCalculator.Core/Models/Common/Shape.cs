@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Text;
 using System.Windows.Forms;
 
 namespace MathCalculator.Core.Models.Common
@@ -8,12 +9,16 @@ namespace MathCalculator.Core.Models.Common
     /// represents the base class for the all the shapes
     /// this class cannot be instantiated
     /// </summary>
-    public abstract partial class Shape : IDisposable
+    public abstract partial class Shape : IDisposable, ICloneable
     {
+        public static readonly Shape Null = null;
+        public static readonly Shape Empty = new EmptyShape();
+
         private readonly EventHandlerList Events = new();
 
         private static readonly object s_createEvent = new();
         private static readonly object s_destroyEvent = new();
+        private static readonly object s_clickEvent = new();
 
         /// <summary>
         /// creates a new instance of the <see cref="Shape"/>
@@ -86,6 +91,21 @@ namespace MathCalculator.Core.Models.Common
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public event EventHandler Click
+        {
+            add
+            {
+                Events.AddHandler(s_clickEvent, value);
+            }
+            remove
+            {
+                Events.RemoveHandler(s_clickEvent, value);
+            }
+        }
+
+        /// <summary>
         /// raises the <see cref="Create"/>
         /// event
         /// </summary>
@@ -93,9 +113,29 @@ namespace MathCalculator.Core.Models.Common
         protected void OnCreate(EventArgs e)
         {
             Shape shape = this;
-            ((EventHandler)Events[s_createEvent])?.Invoke(shape, e);
+            EventHandler handler = (EventHandler)Events[s_createEvent];
+            handler?.Invoke(shape, e);
             Shapes.Add(shape);
             Update();
+        }
+
+        protected void OnClick(EventArgs e)
+        {
+            EventHandler handler = (EventHandler)Events[s_clickEvent];
+            handler?.Invoke(this, e);
+            ShowInformations();
+        }
+
+        /// <summary>
+        /// shows the informations of the shape
+        /// </summary>
+        private void ShowInformations()
+        {
+            string message = ToString();
+            string caption = "Shape informations";
+            MessageBoxButtons buttons = MessageBoxButtons.OK;
+            MessageBoxIcon icon = MessageBoxIcon.Information;
+            MessageBox.Show(message, caption, buttons, icon);
         }
 
         /// <summary>
@@ -161,12 +201,41 @@ namespace MathCalculator.Core.Models.Common
         /// <returns></returns>
         public Shape Clone()
         {
-            return CopyFrom(this);
+            ICloneable cloneable = this;
+            object clone = cloneable.Clone();
+            return clone as Shape;
         }
+
+        public override string ToString()
+        {
+            return PrintMembers();
+        }
+
+        /// <summary>
+        /// creates a string with the informations of the shape
+        /// </summary>
+        /// <returns>a string with the informations of the shape</returns>
+        internal virtual string PrintMembers()
+        {
+            StringBuilder builder = new();
+            builder.AppendLine($"Perimeter = {Perimeter}");
+            builder.AppendLine($"Area = {Area}");
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        object ICloneable.Clone() => CopyFrom(this);
 
         public override bool Equals(object obj)
         {
-            return CheckEquals(obj as Shape);
+            Shape shape = obj as Shape;
+
+            return obj != null
+                && base.Equals(shape)
+                && CheckEquals(shape);
         }
 
         /// <summary>
@@ -204,18 +273,19 @@ namespace MathCalculator.Core.Models.Common
         /// </summary>
         /// <param name="right">the right shape</param>
         /// <returns></returns>
-        internal virtual bool CheckEquals(Shape right)
+        internal virtual bool CheckEquals(Shape other)
         {
-            return right != null
-                && X == right.X
-                && Y == right.Y
-                && Form == right.Form
-                && Location == right.Location
-                && Perimeter == right.Perimeter
-                && Area == right.Area
-                && Shapes == right.Shapes
-                && BackColor == right.BackColor
-                && BorderColor == right.BorderColor;
+            return other != null
+                && IsDestroyed == other.IsDestroyed
+                && X == other.X
+                && Y == other.Y
+                && Form == other.Form
+                && Location == other.Location
+                && Perimeter == other.Perimeter
+                && Area == other.Area
+                && Shapes == other.Shapes
+                && BackColor == other.BackColor
+                && BorderColor == other.BorderColor;
         }
     }
 }
