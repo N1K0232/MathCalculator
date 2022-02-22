@@ -1,50 +1,221 @@
-﻿namespace MathCalculator.Core.Models.Common
+﻿using System;
+using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace MathCalculator.Core.Models.Common
 {
-    public abstract partial class Shape
+    /// <summary>
+    /// represents the base class for the all the shapes
+    /// this class cannot be instantiated
+    /// </summary>
+    public abstract partial class Shape : IDisposable
     {
-        private string _name;
-        private Shape _parent;
+        private readonly EventHandlerList Events = new();
 
-        protected Shape()
+        private static readonly object s_createEvent = new();
+        private static readonly object s_destroyEvent = new();
+
+        /// <summary>
+        /// creates a new instance of the <see cref="Shape"/>
+        /// class
+        /// </summary>
+        /// <param name="form">the form where the Shape will be drawed</param>
+        protected Shape(Form form)
         {
-            _name = "";
-            _parent = null;
+            Form = form;
+            Shapes = new();
+            OnCreate(EventArgs.Empty);
         }
 
-        public string Name
+        /// <summary>
+        /// creates a new instance of the <see cref="Shape"/>
+        /// class
+        /// this constructor is called when the Shape is cloned
+        /// </summary>
+        /// <param name="from">the <see cref="Shape"/> that will be cloned</param>
+        internal Shape(Shape from)
         {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                if (value == Name)
-                {
-                    return;
-                }
+            X = from.X;
+            Y = from.Y;
+            BackColor = from.BackColor;
+            BorderColor = from.BorderColor;
+            Form = from.Form;
+            Location = from.Location;
+            Shapes = from.Shapes;
+        }
 
-                _name = value;
-            }
-        }
-        public Shape Parent
+        /// <summary>
+        /// performs some operations before the Garbage Collector
+        /// destroys the object
+        /// </summary>
+        ~Shape()
         {
-            get
-            {
-                return _parent;
-            }
-            set
-            {
-                _parent = value;
-            }
+            Dispose(false);
         }
-        public abstract float Area { get; }
+
+        /// <summary>
+        /// when overridden in a derived class,
+        /// it gets the perimeter of the shape
+        /// </summary>
         public abstract float Perimeter { get; }
 
+        /// <summary>
+        /// when overridden in a derived class,
+        /// it gets the area of the shape
+        /// </summary>
+        public abstract float Area { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        internal bool IsDestroyed { get; set; } = false;
+
+        /// <summary>
+        /// this event is raised when the Shape is created
+        /// </summary>
+        public event EventHandler Create
+        {
+            add
+            {
+                Events.AddHandler(s_createEvent, value);
+            }
+            remove
+            {
+                Events.RemoveHandler(s_destroyEvent, value);
+            }
+        }
+
+        /// <summary>
+        /// raises the <see cref="Create"/>
+        /// event
+        /// </summary>
+        /// <param name="e">the event informations</param>
+        protected void OnCreate(EventArgs e)
+        {
+            Shape shape = this;
+            ((EventHandler)Events[s_createEvent])?.Invoke(shape, e);
+            Shapes.Add(shape);
+            Update();
+        }
+
+        /// <summary>
+        /// raises the <see cref="Destroy"/>
+        /// event
+        /// </summary>
+        /// <param name="e">the event informations</param>
+        protected void OnDestroy(EventArgs e)
+        {
+            Shape shape = this;
+            ((EventHandler)Events[s_destroyEvent])?.Invoke(shape, e);
+            if (Shapes.Remove(shape) && !IsDestroyed)
+            {
+                IsDestroyed = true;
+            }
+        }
+
+        /// <summary>
+        /// when a property of the Shape changes its value
+        /// this method redraws the control
+        /// </summary>
         protected void Update()
         {
-            Calculate();
+            if (Form is null)
+            {
+                return;
+            }
+
+            Form form = Form;
+            form.Paint += new PaintEventHandler(DrawShape);
         }
-        protected abstract void Calculate();
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        /// <summary>
+        /// releases all the resources
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// releases all the resources
+        /// </summary>
+        /// <param name="disposing"></param>
+        private void Dispose(bool disposing)
+        {
+            if (disposing && _form != null)
+            {
+                _form.Dispose();
+            }
+            OnDestroy(EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// clones the shape
+        /// </summary>
+        /// <returns></returns>
+        public Shape Clone()
+        {
+            return CopyFrom(this);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return CheckEquals(obj as Shape);
+        }
+
+        /// <summary>
+        /// when overridden in a derived class 
+        /// this method creates a copy of the current object
+        /// </summary>
+        /// <param name="from"></param>
+        /// <returns></returns>
+        protected abstract Shape CopyFrom(Shape from);
+
+        /// <summary>
+        /// check if the two shapes are equals
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator ==(Shape left, Shape right)
+        {
+            return left.CheckEquals(right);
+        }
+
+        /// <summary>
+        /// returns the opposite result of the == operator
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>    
+        /// <returns></returns>
+        public static bool operator !=(Shape left, Shape right)
+        {
+            return !(left == right);
+        }
+
+        /// <summary>
+        /// Checks if the right shape is equals to the left shape
+        /// </summary>
+        /// <param name="right">the right shape</param>
+        /// <returns></returns>
+        internal virtual bool CheckEquals(Shape right)
+        {
+            return right != null
+                && X == right.X
+                && Y == right.Y
+                && Form == right.Form
+                && Location == right.Location
+                && Perimeter == right.Perimeter
+                && Area == right.Area
+                && Shapes == right.Shapes
+                && BackColor == right.BackColor
+                && BorderColor == right.BorderColor;
+        }
     }
 }

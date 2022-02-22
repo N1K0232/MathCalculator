@@ -2,6 +2,8 @@
 using System;
 using System.Windows.Forms;
 
+using Color = System.Drawing.Color;
+
 namespace MathCalculator
 {
     public partial class MathCalculatorForm : Form
@@ -14,22 +16,24 @@ namespace MathCalculator
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-        }
-        protected override void OnPaint(PaintEventArgs pe)
-        {
-            base.OnPaint(pe);
-            Square square = new();
-            square.Side = 12;
-            square.Name = "Square";
-            square.Draw(pe);
 
-            Rectangle rectangle = new();
-            rectangle.Width = 40;
-            rectangle.Height = 30;
-            rectangle.X = 400;
-            rectangle.Y = 300;
-            rectangle.Name = "Rectangle";
-            rectangle.Draw(pe);
+            Square square = new(this);
+            square.X = 200;
+            square.Y = 200;
+            square.Side = 12;
+
+            Rectangle rectangle = new(this);
+            rectangle.X = 100;
+            rectangle.Y = 100;
+            rectangle.Width = 4;
+            rectangle.Height = 3;
+            rectangle.BackColor = Color.HotPink;
+
+            Circle circle = new(this);
+            circle.X = 300;
+            circle.Y = 100;
+            circle.Radius = 10;
+            circle.BackColor = Color.Gold;
         }
     }
 }
