@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
@@ -9,7 +10,7 @@ namespace MathCalculator.Core.Models.Common
     /// represents the base class for the all the shapes
     /// this class cannot be instantiated
     /// </summary>
-    public abstract partial class Shape : IDisposable, ICloneable
+    public abstract partial class Shape : IDisposable, ICloneable, IEquatable<Shape>, IComparable<Shape>, IComparer<Shape>
     {
         public static readonly Shape Null = null;
         public static readonly Shape Empty = new EmptyShape();
@@ -287,6 +288,23 @@ namespace MathCalculator.Core.Models.Common
                 && Shapes == other.Shapes
                 && BackColor == other.BackColor
                 && BorderColor == other.BorderColor;
+        }
+
+        public bool Equals(Shape other)
+        {
+            return CheckEquals(other);
+        }
+
+        public int CompareTo(Shape other)
+        {
+            Shape shape = this;
+            return Compare(shape, other);
+        }
+
+        public int Compare(Shape x, Shape y)
+        {
+            bool result = x.Equals(y);
+            return Convert.ToInt32(result);
         }
     }
 }
