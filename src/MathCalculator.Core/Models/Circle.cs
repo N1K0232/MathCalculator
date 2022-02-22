@@ -1,6 +1,7 @@
 ﻿using MathCalculator.Core.Models.Common;
 using System;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace MathCalculator.Core.Models
@@ -84,6 +85,12 @@ namespace MathCalculator.Core.Models
             pen.Dispose();
         }
 
+        internal override string PrintMembers()
+        {
+            StringBuilder builder = new();
+            builder.AppendLine($"Radius = {Radius}");
+            return builder.ToString() + base.PrintMembers();
+        }
         internal override bool CheckEquals(Shape other)
         {
             Circle right = other as Circle;

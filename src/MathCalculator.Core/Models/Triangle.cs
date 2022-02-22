@@ -1,6 +1,7 @@
 ﻿using MathCalculator.Core.Models.Common;
 using System;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace MathCalculator.Core.Models
@@ -140,6 +141,15 @@ namespace MathCalculator.Core.Models
             float thirdSide = triangle.ThirdSide;
         }
 
+        internal override string PrintMembers()
+        {
+            StringBuilder builder = new();
+            builder.AppendLine($"First Side = {FirstSide}");
+            builder.AppendLine($"Second Side = {SecondSide}");
+            builder.AppendLine($"Third Side = {ThirdSide}");
+            builder.AppendLine($"Height = {Height}");
+            return builder.ToString() + base.PrintMembers();
+        }
         internal override bool CheckEquals(Shape other)
         {
             Triangle right = other as Triangle;
@@ -147,7 +157,7 @@ namespace MathCalculator.Core.Models
                 && SecondSide == right.SecondSide
                 && ThirdSide == right.ThirdSide
                 && Height == right.Height
-                && base.Equals(right);
+                && base.CheckEquals(right);
         }
     }
 }

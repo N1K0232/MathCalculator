@@ -1,6 +1,7 @@
 ﻿using MathCalculator.Core.Models.Common;
 using System;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace MathCalculator.Core.Models
@@ -88,6 +89,13 @@ namespace MathCalculator.Core.Models
             brush.Dispose();
         }
 
+        internal override string PrintMembers()
+        {
+            StringBuilder builder = new();
+            builder.AppendLine($"Side = {Side}");
+            builder.AppendLine($"Diagonal = {Diagonal}");
+            return builder.ToString() + base.PrintMembers();
+        }
         internal override bool CheckEquals(Shape other)
         {
             Square right = other as Square;
